@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface VBViewController : UIViewController
+@class TWTweetComposeViewController; 
 
+@interface VBViewController : UIViewController
+@property (nonatomic, weak) IBOutlet UIButton *tweetButton; 
+@property (nonatomic, strong) TWTweetComposeViewController *tweetSheet; 
+
+- (IBAction)tweetButtonTapped:(id)sender; 
 @end

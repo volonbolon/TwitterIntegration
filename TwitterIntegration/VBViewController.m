@@ -7,8 +7,11 @@
 //
 
 #import "VBViewController.h"
+#import <Twitter/TWTweetComposeViewController.h>
 
 @implementation VBViewController
+@synthesize tweetButton; 
+@synthesize tweetSheet; 
 
 - (void)didReceiveMemoryWarning
 {
@@ -18,43 +21,36 @@
 
 #pragma mark - View lifecycle
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	
+    if ( [TWTweetComposeViewController class] != nil ) {
+        if ( ![TWTweetComposeViewController canSendTweet] ) {
+            [[self tweetButton] setEnabled:NO]; 
+        } else {
+            [[self tweetButton] setEnabled:YES]; 
+            
+            [self setTweetSheet:[[TWTweetComposeViewController alloc] init]]; 
+        }
+    }
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	[super viewDidDisappear:animated];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+- (IBAction)tweetButtonTapped:(id)sender {
+    BOOL errorWithInitialText = [[self tweetSheet] setInitialText:@"Some Initial Text. No more than 140 chars."]; 
+    BOOL errorWithImage = [[self tweetSheet] addImage:[UIImage imageNamed:@"MS_Monster_Guy_Fawkes.png"]]; 
+    BOOL errorWithURL = [[self tweetSheet] addURL:[NSURL URLWithString:@"http:volonbolon.net/"]]; 
+    
+    if ( errorWithURL || errorWithInitialText || errorWithImage ) {
+        UIAlertView *errorAlertView = [[UIAlertView alloc] initWithTitle:@"Something Went wrong" 
+                                                                 message:@"Something went wrong adding content to the tweet"
+                                                                delegate:nil
+                                                       cancelButtonTitle:@"OK"
+                                                       otherButtonTitles:nil]; 
+        [errorAlertView show]; 
+    }
+    
+    [self presentModalViewController:[self tweetSheet] 
+                            animated:YES]; 
 }
 
 @end
